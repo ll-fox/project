@@ -1,0 +1,44 @@
+version: v1
+build:
+  tools:
+    node: 18.18.0
+    git:
+  deps:
+    - npm-install-g: yarn
+  run:
+    workDir: .
+    cmd:
+      - sh ./bin/plus-build.sh
+  cache:
+    dirs:
+      - ./node_modules
+      - /home/maoyan/.yarn
+      - /home/maoyan/.yarn-cache
+  target:
+    distDir: ./
+    files:
+      - ./
+deploy:
+  tools:
+    node: 18.18.0
+  targetDir: /opt/maoyan/my-gpt
+  run:
+    workDir: .
+    cmd:
+      - sh ./bin/plus-run.sh
+  check:
+    workDir: .
+    cmd:
+      - sh ./bin/plus-check.sh
+autodeploy:
+  tools:
+    node: 18.18.0
+  targetDir: /opt/maoyan/my-gpt
+  env:
+    HOME: /home/maoyan
+    USER: maoyan
+  daemonToolsCheckTimeout: 20s
+  run: sh ./bin/plus-run.sh
+  check: sh ./bin/plus-check.sh
+  checkRetry: 5
+  checkInterval: 5s
