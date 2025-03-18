@@ -4,7 +4,9 @@
   "main": "dist/intelligent-chat.umd.js",
   "module": "dist/intelligent-chat.es.js",
   "types": "dist/client/App.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "vite",

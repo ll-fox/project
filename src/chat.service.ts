@@ -1,22 +1,30 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ChatGateway } from './chat.gateway';
+import { ChatConfig } from './config';
 
 @Injectable()
 export class ChatService {
+  private config!: ChatConfig; // 使用明确赋值断言
+
   constructor(
     private httpService: HttpService,
     @Inject(forwardRef(() => ChatGateway))
     private chatGateway: ChatGateway
   ) {}
 
+  // 添加设置配置的方法
+  setConfig(config: ChatConfig) {
+    this.config = config;
+  }
+
   async generateResponse(message: string): Promise<void> {
     const url = 'https://wss.lke.cloud.tencent.com/v1/qbot/chat/sse';
     const payload = {
       content: message,
-      bot_app_key: 'jLKUTKgP',
-      visitor_biz_id: 'test',
-      session_id: 'test',
+      bot_app_key: this.config?.botAppKey || 'jLKUTKgP',
+      visitor_biz_id: this.config?.visitorBizId || 'test',
+      session_id: this.config?.sessionId || 'test',
       visitor_labels: [],
     };
 

@@ -3942,11 +3942,6 @@
   "resolved" "http://r.npm.sankuai.com/utils-merge/download/utils-merge-1.0.1.tgz"
   "version" "1.0.1"
 
-"uuid@^9.0.0":
-  "integrity" "sha1-4YjUyIU8xyIiA5LEJM1jfzIpPzA="
-  "resolved" "http://r.npm.sankuai.com/uuid/download/uuid-9.0.1.tgz"
-  "version" "9.0.1"
-
 "vary@^1", "vary@~1.1.2":
   "integrity" "sha1-IpnwLG3tMNSllhsLn3RSShj2NPw="
   "resolved" "http://r.npm.sankuai.com/vary/download/vary-1.1.2.tgz"

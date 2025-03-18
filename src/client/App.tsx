@@ -5,9 +5,6 @@ import Draggable from 'react-draggable';
 import { ChatProvider, useChatConfig } from '../context';
 import { ChatConfig } from '@/config';
 
-// 修改 WebSocket 连接端口为 3000
-const socket = io('http://localhost:3000');
-
 interface Message {
   text: string;
   isUser: boolean;
@@ -27,29 +24,24 @@ function ChatWidget() {
   const [showChat, setShowChat] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragPosition = useRef({ x: 0, y: 0 });
-  const [lkeComponent, setLkeComponent] = useState<any>(null);
+
+  // 应用主题配置
+  const theme = {
+    primaryColor: config.theme?.primaryColor || '#3b82f6',
+    secondaryColor: config.theme?.secondaryColor || '#e5e7eb',
+    bubbleRadius: config.theme?.bubbleRadius || 8
+  };
+
+  // 应用本地化文本配置
+  const localization = {
+    placeholder: config.localization?.placeholder || 'Type your message...',
+    sendButton: config.localization?.sendButton || 'Send',
+    typingIndicator: config.localization?.typingIndicator || 'AI is typing...'
+  };
 
   useEffect(() => {
-    const checkComponent = () => {
-      if (window['lke-component' as keyof Window]) {
-        console.log('lkeComponent loaded:', window['lke-component' as keyof Window]);
-        setLkeComponent(window['lke-component' as keyof Window]);
-      } else {
-        setTimeout(checkComponent, 100);
-      }
-    };
-    checkComponent();
-  }, []);
-
-  useEffect(() => {
-    console.log(12345, lkeComponent);
-    if (lkeComponent) {
-      console.log('lkeComponent loaded:', lkeComponent);
-      // 使用 lkeComponent
-    }
-  }, [lkeComponent]);
-
-  useEffect(() => {
+    socket.emit('setConfig', config);
+    
     socket.on('receiveMessage', (content: string) => {
       setMessages(prev => {
         const newMessages = [...prev];
@@ -66,7 +58,7 @@ function ChatWidget() {
     return () => {
       socket.off('receiveMessage');
     };
-  }, []);
+  }, [config]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -98,6 +90,27 @@ function ChatWidget() {
     setIsDragging(false);
   };
 
+  // 创建动态样式对象
+  const buttonStyle = {
+    backgroundColor: theme.primaryColor,
+    borderRadius: '9999px',
+  };
+
+  const userBubbleStyle = {
+    backgroundColor: theme.primaryColor,
+    borderRadius: `${theme.bubbleRadius}px`,
+  };
+
+  const aiBubbleStyle = {
+    backgroundColor: theme.secondaryColor,
+    borderRadius: `${theme.bubbleRadius}px`,
+  };
+
+  const sendButtonStyle = {
+    backgroundColor: theme.primaryColor,
+    borderRadius: `${theme.bubbleRadius / 2}px`,
+  };
+
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <Draggable
@@ -106,17 +119,15 @@ function ChatWidget() {
         position={dragPosition.current}
       >
         <button
-          className="w-12 h-12 bg-blue-500 rounded-full shadow-lg 
-                   hover:bg-blue-600 text-white flex items-center 
-                   justify-center cursor-move"
+          className="w-12 h-12 shadow-lg hover:opacity-90 text-white flex items-center justify-center cursor-move"
+          style={buttonStyle}
         >
           💬
         </button>
       </Draggable>
 
       {showChat && (
-        <div className="fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl 
-                      animate-fade-in-up">
+        <div className="fixed bottom-20 right-4 w-96 bg-white rounded-lg shadow-xl animate-fade-in-up">
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-lg font-semibold">智能问答</h2>
             <button
@@ -136,18 +147,19 @@ function ChatWidget() {
                 }`}
               >
                 <div
-                  className={`inline-block p-3 rounded-lg max-w-[80%] break-words ${
+                  className={`inline-block p-3 max-w-[80%] break-words ${
                     message.isUser
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-800'
+                      ? 'text-white'
+                      : 'text-gray-800'
                   }`}
+                  style={message.isUser ? userBubbleStyle : aiBubbleStyle}
                 >
                   <ReactMarkdown className="prose">{message.text}</ReactMarkdown>
                 </div>
               </div>
             ))}
             {isTyping && (
-              <div className="text-gray-500 italic">AI is typing...</div>
+              <div className="text-gray-500 italic">{localization.typingIndicator}</div>
             )}
             <div ref={messagesEndRef} />
           </div>
@@ -159,13 +171,14 @@ function ChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="flex-1 p-2 border rounded"
-                placeholder="Type your message..."
+                placeholder={localization.placeholder}
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-4 py-2 text-white hover:opacity-90"
+                style={sendButtonStyle}
               >
-                Send
+                {localization.sendButton}
               </button>
             </div>
           </form>

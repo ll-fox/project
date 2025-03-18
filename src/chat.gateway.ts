@@ -4,9 +4,11 @@ import {
   SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
+import { ChatConfig } from './config';
 
 @WebSocketGateway({
   cors: {
@@ -28,10 +30,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('sendMessage')
-  async handleMessage(client: Socket, payload: string): Promise<void> {
-    console.log(12345);
-    
-    // 使用 SSE 发送请求
-    await this.chatService.generateResponse(payload);
+  async handleMessage(@MessageBody() message: string): Promise<void> {
+    await this.chatService.generateResponse(message);
+  }
+
+  @SubscribeMessage('setConfig')
+  handleConfig(@MessageBody() config: ChatConfig): void {
+    this.chatService.setConfig(config);
   }
 }
