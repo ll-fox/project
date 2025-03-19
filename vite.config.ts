@@ -4,14 +4,14 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  root: 'src/client',
   build: {
-    outDir: './dist',
+    outDir: '../../dist/client',
     emptyOutDir: true,
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(__dirname, 'src/client/App.tsx'),
       name: 'IntelligentChat',
-      fileName: (format) => `intelligent-chat.${format}.js`,
-      formats: ['es', 'umd']
+      fileName: (format) => `intelligent-chat.${format}.js`
     },
     rollupOptions: {
       external: ['react', 'react-dom'],
@@ -24,7 +24,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 5173,
+    port: 5174,
     cors: true
   },
   css: {
