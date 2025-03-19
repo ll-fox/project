@@ -58,7 +58,7 @@ function ChatWidget() {
     return () => {
       socket.off('receiveMessage');
     };
-  }, [config]);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -110,6 +110,13 @@ function ChatWidget() {
     backgroundColor: theme.primaryColor,
     borderRadius: `${theme.bubbleRadius / 2}px`,
   };
+
+  useEffect(() => {
+    return () => {
+      // 清理WebSocket连接
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div className="fixed bottom-4 right-4 z-50">

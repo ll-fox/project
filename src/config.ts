@@ -13,5 +13,12 @@ export interface ChatConfig {
     placeholder?: string;
     sendButton?: string;
     typingIndicator?: string;
+    headerTitle?: string;
   };
+  routeWhitelist?: string[];
+  position?: {
+    bottom?: number;
+    right?: number;
+  };
+  zIndex?: number;
 } 
